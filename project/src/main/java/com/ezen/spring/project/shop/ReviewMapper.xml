@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.spring.project.shop.ReviewMapper">
+		<insert id="addReview" parameterType="com.ezen.spring.project.shop.ReviewVO"
+	    useGeneratedKeys="true" keyProperty="reviewNum">
+        INSERT INTO review (reviewTitle, reviewContents, reviewDate, reviewparentsNum, reviewAuthor, reviewLikeCnt)
+		VALUES (#{reviewTitle}, #{reviewContents}, CURDATE(), #{reviewparentsNum}, #{reviewAuthor}, 0)
+		</insert>
+
+		<insert id="addReviewAttach" parameterType="com.ezen.spring.project.shop.ReviewAttachVO"
+			useGeneratedKeys="true" keyProperty="reviewattachNum">
+				 INSERT INTO reviewattach VALUES 
+		    <foreach collection="list" item="item" separator=", ">
+		         (NULL, #{item.reviewattachName}, #{item.reviewattachparentsNum}, #{item.reviewattachfSize}, #{item.reviewattachfContentType})
+		    </foreach>
+		</insert>
+		<select id="getList" resultType="map">
+		    SELECT r.reviewNum, r.reviewTitle, r.reviewContents, r.reviewdate, r.reviewparentsNum, r.reviewLikeCnt, r.reviewAuthor,
+		    i.goods as goods,
+		    group_concat(reviewattachNum) rnums,
+		    group_concat(reviewattachName) rnames,
+		    group_concat(reviewattachparentsNum)rpnums,
+		    group_concat(reviewattachfSize) rfsizes,
+		    group_concat(reviewattachfContentType) rcontenttypes
+		    FROM review r 
+		    LEFT OUTER JOIN reviewAttach a ON r.reviewNum = a.reviewattachparentsNum
+		    LEFT OUTER JOIN item i ON r.reviewparentsNum = i.itemNum
+		    GROUP BY r.reviewNum
+		    ORDER BY r.reviewNum DESC
+		</select>
+		
+		 <select id="search" resultType="map">
+		    SELECT r.reviewNum, r.reviewTitle, r.reviewContents, CURDATE(), r.reviewparentsNum, r.reviewLikeCnt, r.reviewAuthor,
+			group_concat(a.reviewattachNum) rnums,
+			group_concat(a.reviewattachName) rnames,
+			group_concat(a.reviewparentsNum)rpnums,
+			group_concat(reviewfSize) rfsizes,
+			group_concat(reviewfContentType) rcontenttypes
+			FROM review r LEFT OUTER JOIN reviewAttach a
+			ON r.reviewNum = a.reviewparentsNum
+		    WHERE r.reviewTitle = #{reviewTitle}
+		    
+		    GROUP BY r.reviewNum
+			ORDER BY r.reviewNum DESC
+		 </select>
+		
+		<select id="getReview" parameterType="Integer" resultType="map">
+			SELECT r.reviewNum, r.reviewTitle, r.reviewContents, r.reviewdate, r.reviewparentsNum, r.reviewLikeCnt, r.reviewAuthor,
+		    i.goods as goods,
+		    group_concat(reviewattachNum) as reviewattachNums,
+		    group_concat(reviewattachName) as reviewattachName,
+		    group_concat(reviewattachparentsNum)rpnums,
+		    group_concat(reviewattachfSize) rfsizes,
+		    group_concat(reviewattachfContentType) rcontenttypes
+		    FROM review r 
+		    LEFT OUTER JOIN reviewAttach a ON r.reviewNum = a.reviewattachparentsNum
+		    LEFT OUTER JOIN item i ON r.reviewparentsNum = i.itemNum
+		    WHERE r.reviewNum=#{reviewNum}
+		</select>
+		
+		
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.spring.project.shop.ItemMapper">
+		<insert id="addItem" parameterType="com.ezen.spring.project.shop.ItemVO"
+			useGeneratedKeys="true" keyProperty="itemNum">
+			INSERT INTO item VALUES(NULL, #{goods},#{price},#{purchaseCnt},#{cartCnt},#{category},#{explain})
+		</insert>
+		<insert id="addItemAttach" parameterType="com.ezen.spring.project.shop.ItemAttachVO"
+		useGeneratedKeys="true" keyProperty="itemattachNum">
+			 INSERT INTO itemAttach VALUES 
+	    <foreach collection="list" item="item" separator=", ">
+	        (NULL, #{item.itemattachName}, #{item.itemparentsNum}, #{item.itemfSize}, #{item.itemfContentType})
+	    </foreach>
+		</insert>
+		
+		<select id="getList" resultType="map">
+			SELECT i.itemNum, i.goods, i.price, i.purchaseCnt, i.cartCnt, i.category, i.explain,
+			group_concat(a.itemattachNum) inums,
+			group_concat(a.itemattachName) inames,
+			group_concat(a.itemparentsNum)ipnums,
+			group_concat(itemfSize) ifsizes,
+			group_concat(itemfContentType) icontenttypes
+			FROM item i LEFT OUTER JOIN itemAttach a
+			ON i.itemNum = a.itemparentsNum
+			GROUP BY i.itemNum
+			ORDER BY i.itemNum DESC
+		</select>
+		
+		 <select id="search" resultType="map">
+		    SELECT i.itemNum, i.goods, i.price, i.purchaseCnt, i.cartCnt, i.category, i.explain,
+		    group_concat(a.itemattachNum) inums,
+		    group_concat(a.itemattachName) inames,
+		    group_concat(a.itemparentsNum) ipnums,
+		    group_concat(itemfSize) ifsizes,
+		    group_concat(itemfContentType) icontenttypes
+		    FROM item i LEFT OUTER JOIN itemAttach a
+		    ON i.itemNum = a.itemparentsNum
+		    WHERE i.category = #{category}
+		    
+		    GROUP BY i.itemNum
+		    ORDER BY i.itemNum DESC
+		 </select>
+		
+		 <select id="getItem" parameterType="Integer" resultType="map">
+		      SELECT itemNum, goods, price, purchaseCnt, cartCnt, category, i.explain,
+		         GROUP_CONCAT(a.itemattachNum) as itemattachNum,
+		         GROUP_CONCAT(a.itemattachName) as itemattachName,
+		         GROUP_CONCAT(a.itemparentsNum) as itemparentsNum,
+		         GROUP_CONCAT(a.itemfSize) as itemfSize,
+		         GROUP_CONCAT(a.itemfContentType) as itemfContentType
+		      FROM item i LEFT OUTER JOIN itemAttach a
+		      ON i.itemNum=a.itemparentsNum
+		      WHERE i.itemNum=#{itemNum}
+  		  </select>
+  		   
+  		   <update id="updateItem"
+  		   		parameterType="com.ezen.spring.project.shop.ItemVO">
+  		   		UPDATE item SET goods=#{goods}, price=#{price}, category=#{category},`explain`=#{explain} WHERE itemNum=#{itemNum}		
+  		   </update>
+  		   
+  		   <delete id="deleteItem"
+  		   		parameterType="Integer">
+  		   		DELETE FROM item WHERE itemNum=#{itemNum}		
+  		   </delete>
+  		   
+  		   <update id="CartCnt" parameterType="String">
+		   		 UPDATE item SET cartCnt = cartCnt+1 WHERE goods=#{goods}
+		   </update>
+		   
+		   <update id="OrderCnt" parameterType="com.ezen.spring.project.shop.ItemOrderVO">
+		   		 UPDATE item SET purchaseCnt = purchaseCnt+#{qty} WHERE goods=#{goods}
+		   </update>
+		   
+		   <select id="getGoods" parameterType="String"  resultType="com.ezen.spring.project.shop.ItemVO">
+			SELECT * FROM item WHERE goods=#{goods}
+			</select>
+		   
+		   
+		  <select id="getTopItems" parameterType="Integer" resultType="map">
+			SELECT i.itemNum, i.goods, i.price, i.purchaseCnt, i.cartCnt, i.category, i.explain,
+			group_concat(a.itemattachNum) inums,
+			group_concat(a.itemattachName) inames,
+			group_concat(a.itemparentsNum)ipnums,
+			group_concat(itemfSize) ifsizes,
+			group_concat(itemfContentType) icontenttypes
+			FROM item i LEFT OUTER JOIN itemAttach a
+			ON i.itemNum = a.itemparentsNum
+			GROUP BY i.itemNum
+			ORDER BY purchaseCnt DESC
+			LIMIT 10
+		  </select>
+</mapper>

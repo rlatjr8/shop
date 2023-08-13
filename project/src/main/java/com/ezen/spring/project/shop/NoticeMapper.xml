@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.spring.project.shop.NoticeMapper">
+	<select id="getList"
+		resultType="com.ezen.spring.project.shop.NoticeVO">
+		SELECT * FROM notice ORDER BY noticeNum DESC	
+	</select>
+
+	<select id="getBoard" 
+		parameterType="Integer"
+		resultType="com.ezen.spring.project.shop.NoticeVO">
+		SELECT * FROM notice WHERE noticeNum=#{noticeNum}
+	</select>
+	
+	<insert id="addBoard"
+		parameterType="com.ezen.spring.project.shop.NoticeVO">
+		INSERT INTO notice VALUES(NULL, #{noticeTitle}, #{noticeAuthor},NOW(),#{noticeContents})
+	</insert>
+	
+	<update id="updateBoard"
+		parameterType="com.ezen.spring.project.shop.NoticeVO">
+		UPDATE notice SET noticeTitle=#{noticeTitle}, noticeContents=#{noticeContents} WHERE noticeNum=#{noticeNum}
+	</update>
+	
+	<delete id="deleteBoard" parameterType="Integer">
+		DELETE FROM notice WHERE noticeNum=#{noticeNum}
+	</delete>
+</mapper>

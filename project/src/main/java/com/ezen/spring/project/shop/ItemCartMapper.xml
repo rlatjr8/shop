@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.spring.project.shop.ItemCartMapper">
+		<insert id="addCart"
+			parameterType="com.ezen.spring.project.shop.ItemCartVO">
+			INSERT INTO itemcart VALUES(NULL, #{goods},#{price},#{qty},#{user})
+		</insert>
+		
+		<select id="getCart" parameterType="Integer" resultType="com.ezen.spring.project.shop.ItemCartVO">
+			SELECT * FROM itemcart WHERE cartNum=#{cartNum}
+		</select>
+		
+		<select id="getList" resultType="com.ezen.spring.project.shop.ItemCartVO">
+			SELECT * FROM itemcart WHERE user=#{uid}
+		</select>
+		
+		<update id="update" parameterType="com.ezen.spring.project.shop.ItemCartVO">
+			UPDATE itemcart SET qty=#{qty} WHERE cartNum=#{cartNum}
+		</update>
+		
+		<delete id="delete" parameterType="Integer">
+			DELETE FROM itemcart WHERE cartNum=#{cartNum}
+		</delete>
+		
+		<delete id="del" parameterType="Integer">
+			DELETE FROM itemcart WHERE cartNum=#{cartNum}
+		</delete>
+		
+		<delete id="clear" parameterType="String">
+			DELETE FROM  itemcart WHERE user=#{user}
+		</delete>
+		
+		<select id="findCartByUserAndGoods" parameterType="com.ezen.spring.project.shop.ItemCartVO" resultType="com.ezen.spring.project.shop.ItemCartVO">
+        SELECT * FROM itemcart WHERE user=#{user} AND goods=#{goods}
+   		</select>
+		
+</mapper>
