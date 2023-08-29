@@ -15,6 +15,23 @@
 			SELECT * FROM itemcart WHERE user=#{uid}
 		</select>
 		
+		<select id="getList2" resultType="map">
+		    SELECT c.cartNum, c.goods as cart_goods, c.price, c.qty, c.user, i.goods as item_goods,
+		    group_concat(a.itemattachNum) inums,
+		    group_concat(a.itemattachName) inames,
+		    group_concat(a.itemparentsNum)ipnums,
+		    group_concat(itemfSize) ifsizes,
+		    group_concat(itemfContentType) icontenttypes
+		    FROM itemcart c 
+		    LEFT OUTER JOIN item i ON c.goods = i.goods
+		    LEFT OUTER JOIN itemattach a ON i.itemNum = a.itemparentsNum
+		    WHERE user=#{uid}
+		    GROUP BY c.cartNum
+		    ORDER BY c.cartNum DESC
+		    
+		</select>
+		
+		
 		<update id="update" parameterType="com.ezen.spring.project.shop.ItemCartVO">
 			UPDATE itemcart SET qty=#{qty} WHERE cartNum=#{cartNum}
 		</update>

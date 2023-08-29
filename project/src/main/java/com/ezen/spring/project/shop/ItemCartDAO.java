@@ -1,9 +1,13 @@
 package com.ezen.spring.project.shop;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.PageHelper;
 
 import jakarta.transaction.Transactional;
 
@@ -51,5 +55,18 @@ public class ItemCartDAO
 		return icMapper.del(c);
 		
 	}
+
+	public PageInfo<Map> search(String category, String keyword, int pn) {
+		PageHelper.startPage(pn, 10);
+		PageInfo<Map> pageInfo = new PageInfo<>(icMapper.search(category, keyword));
+		return pageInfo;
+	}
+
+	public PageInfo<Map> getList2(int pn,String uid) {
+		PageHelper.startPage(pn,5);
+		PageInfo<Map> pageInfo = new PageInfo<>(icMapper.getList2(uid));
+		return pageInfo;
+	}
+
 	
 }

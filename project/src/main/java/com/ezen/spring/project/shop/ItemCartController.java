@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.github.pagehelper.PageInfo;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -73,11 +75,35 @@ public class ItemCartController
 		return map;
 	}
 	
-	@GetMapping("/list")
-	public String list(Model model,@SessionAttribute(name="userid",required = false) String uid)
+//	@GetMapping("/list")
+//	public String list(@PathVariable int pn,Model model,@SessionAttribute(name="userid",required = false) String uid)
+//	{
+//		PageInfo<Map> pageInfo = null;
+//		pageInfo = iDAO.getList(pn);
+//		
+//		model.addAttribute("pageInfo", pageInfo);
+//		model.addAttribute("list", icDAO.getList(uid)); 
+//		return "shop/item/cartList";
+//	}
+	@GetMapping("/list/{pn}")
+	public String list(Model model,@PathVariable int pn,
+			@SessionAttribute(value="userid", required=false) String uid,
+			@RequestParam(value="category", required=false) String category,
+			@RequestParam(value="keyword" , required=false) String keyword)
 	{
+		PageInfo<Map> pageInfo = null;
+		if(category!=null) {		
+			pageInfo = icDAO.search(category, keyword, pn);
+			model.addAttribute("category",category);
+			model.addAttribute("keyword",keyword);
+			
+		} else {
+			
+			pageInfo = icDAO.getList2(pn,uid);
+		}
 		
-		model.addAttribute("list", icDAO.getList(uid)); 
+		model.addAttribute("pageInfo", pageInfo);
+		model.addAttribute("userid",uid);
 		return "shop/item/cartList";
 	}
 	

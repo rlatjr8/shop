@@ -18,7 +18,13 @@
 	 main > h2 { position: absolute;top: 0; left: 0; margin: 0; padding: 10px; background-color: black; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);}
 	 #aa {color:white;}
 	 .user-info { position: absolute; top: 0; right: 0; }
-	
+	 
+	.product-image img {
+	    max-width: 100px; /* 원하는 최대 너비 */
+	    max-height: 100px; /* 원하는 최대 높이 */
+	    width: auto;
+	    height: auto;
+	}
 </style>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script type="text/javascript">
@@ -65,7 +71,7 @@ function removeItem() {
 		dataType:'json',
 		success:function(res){
 			alert(res.deleted ? '삭제 성공':'삭제 실패');
-			location.href="/cart/list";
+			location.href="/cart/list/1";
 
 		},
 		error:function(xhr,status,err){
@@ -85,7 +91,7 @@ function clearCart() {
 		dataType:'json',
 		success:function(res){
 			alert(res.cleared ? '장바구니를 비웠습니다':'비우기 실패');
-			location.href='/cart/list';
+			location.href='/cart/list/1';
 		},
 		error:function(xhr,status,err){
 			alert('에러:'+status + '/' + err);
@@ -171,24 +177,40 @@ function mypage(){
 	
 	<form id="deleteForm" method="Post" action="/cart/delete" onsubmit="return removeItem();">
 	<table>
-	<label>전체선택<input type="checkbox" id="cboxAll" name="cboxAll" onclick="checkAll();"></label>
-	<tr><th>상품</th><th>상품명</th><th>가격</th><th>수량</th>
-		<th><button type="submit" >삭제</button></th></tr>
-		
-	<c:forEach var="c" items="${list}">
-	<tr><td>${c.goods}</td>
-	<td>${c.goods}</td><td>${c.price}</td>
-		<td>
-			<input type="number" class="qty" id="qty${c.cartNum}" value="${c.qty}" min="1" max="50">
-			<button type="button" onclick="modifyQty(${c.cartNum});">수정</button>
-		</td>
-		
-		<td><input type="checkbox" name="cartNum" value="${c.cartNum}"></td>
-	</tr>	
-	</c:forEach>
+		<label>전체선택<input type="checkbox" id="cboxAll" name="cboxAll" onclick="checkAll();"></label>
+		<tr><th>상품</th><th>상품명</th><th>가격</th><th>수량</th>
+			<th><button type="submit" >삭제</button></th>
+		</tr>
+			
+		<c:forEach var="c" items="${pageInfo.list}">
+            <tr>
+                <td class="product-image">
+                    <img src="${pageContext.request.contextPath}/items/${c.inames}">
+                </td>
+                <td>${c.cart_goods}</td>
+                <td>${c.price}</td>
+                <td>
+                    <input type="number" class="qty" id="qty${c.cartNum}" value="${c.qty}" min="1" max="50">
+                    <button type="button" onclick="modifyQty(${c.cartNum});">수정</button>
+                </td>
+                <td><input type="checkbox" name="cartNum" value="${c.cartNum}"></td>
+            </tr>   
+        </c:forEach>
+       </table>
+      </form>
+		<nav id="pagination">
+			<c:forEach var="pn" items="${pageInfo.navigatepageNums}">
+				<c:choose>
+			  		<c:when test="${pn==pageInfo.pageNum}">
+			  			<span id="pageNum">[${pn}]</span>
+			  		</c:when>
+			  		<c:otherwise>
+			  		    <a href="/item/list/${pn}?category=${category}">${pn}</a>
+			  		</c:otherwise>
+		    	</c:choose>
+			</c:forEach>
+		</nav>
 	
-	</table>
-	</form>
 	<p>
 	<nav>
 	<c:if test="${userid != null}">
