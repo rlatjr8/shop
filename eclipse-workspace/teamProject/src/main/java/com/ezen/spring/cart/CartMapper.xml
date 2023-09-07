@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		
+<mapper namespace="com.ezen.spring.cart.CartMapper">
+
+	<insert id="addCart"
+			useGeneratedKeys="true" keyProperty="cartNum"
+			parameterType="com.ezen.spring.cart.Cart">
+			INSERT INTO cart VALUES(NULL,#{itemNum},#{price},#{quantity},#{memberID},#{optionInformation})		
+	</insert>
+
+	<select id="getList" resultType="map">
+			SELECT c.cartNum, c.itemNum, c.price, c.quantity, c.memberID, i.itemNum,i.goods,
+				GROUP_CONCAT(a.itemAttachNum) fnums, 
+				GROUP_CONCAT(itemAttachParentsNum) pnums, 
+				GROUP_CONCAT(itemAttachName) fnames, 
+				GROUP_CONCAT(itemAttachFileSize) fsizes, 
+				GROUP_CONCAT(itemAttachFileContentType) contenttypes
+		    FROM cart c 
+		    LEFT OUTER JOIN item i ON c.itemNum = i.itemNum
+		    LEFT OUTER JOIN itemAttach a ON i.itemNum = a.itemAttachParentsNum
+		    WHERE c.memberID = #{memberID} 
+		    GROUP BY c.cartNum
+		    ORDER BY c.cartNum DESC
+	</select>
+	
+	<delete id="cartClear"
+			parameterType="String">
+			DELETE FROM cart WHERE memberID=#{memberID}
+	</delete>
+	
+	<update id="updateCart"
+			parameterType="com.ezen.spring.cart.Cart">
+			UPDATE cart SET quantity=#{quantity} WHERE cartNum=#{cartNum}
+	</update>
+	
+	<delete id="cartDelete" 
+			parameterType="Integer">
+			DELETE FROM cart WHERE cartNum=#{cartNum}
+	</delete>
+	
+	<select id="getCart"
+			parameterType="com.ezen.spring.cart.Cart"
+			resultType="com.ezen.spring.cart.Cart">
+			SELECT * FROM cart WHERE memberID=#{memberID} AND itemNum=#{itemNum}
+	</select>
+	
+	<select id="getCartByCartNum"
+			parameterType="Integer"
+			resultType="com.ezen.spring.cart.Cart">
+			SELECT * FROM cart WHERE cartNum=#{cartNum}
+	</select>
+	
+	<select id="getCartCount"
+         parameterType="String"
+         resultType="Integer">
+         SELECT COUNT(*) FROM Cart WHERE memberID=#{memberID}
+   </select>
+</mapper>
