@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -48,6 +49,8 @@
 	    width: 200;
 	    height: 200;
 	}
+	
+	th,td{text-align:center;}
 </style>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
@@ -195,9 +198,15 @@ function findAddr(){
 	<h3>상품정보</h3>
 	<table>
 	<tr>
-		<th>상품</th><th>상품번호</th><th>상품명</th><th>가격</th><th>수량</th>
+		<th>상품</th>
+		<th>상품번호</th>
+		<th>상품명</th>
+		<th>수량</th>
+		<th>적립금</th>
+		<th>주문금액</th>
 	
 	</tr>
+		<c:set var="totalPrice" value="0" />
 		<c:forEach var="c" items="${list}">
 			<tr>
 				<td class="product-image">
@@ -206,20 +215,18 @@ function findAddr(){
 				</td>
 				<td>${c.cartNum}</td>
 				<td>${c.goods}</td>
-				<td>${c.price}</td>
-				<td>
-				<input type="number" class="quantity" id="quantity${c.cartNum}" value="${c.quantity}" min="1" max="50">
-				<button type="button" onclick="modifyQty(${c.cartNum});">수정</button>
-				</td>
-				<td><input type="checkbox" name="cartNum" value="${c.cartNum}"></td>
+				<td>${c.quantity}</td>
+				<td><fmt:formatNumber value="${c.price * 0.03}" pattern="#,##0"/>P</td>
+				<td><fmt:formatNumber value="${c.price}" pattern="#,##0"/>원</td>
 			</tr>
+			<c:set var="totalPrice" value="${totalPrice + c.price}" />
 		</c:forEach>
+		
 	</table>
-	
+	<label>주문총액</label><td><fmt:formatNumber value="${totalPrice}" pattern="#,##0"/>원</td>
 	<nav>
 			<button type="button" onclick="javascript:add_Order();">결제</button>
 	</nav>
-test
 </main>
 </body>
 </html>
