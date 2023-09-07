@@ -219,6 +219,7 @@ function findAddr(){
 	<nav>
 			<button type="button" onclick="javascript:add_Order();">결제</button>
 	</nav>
+test
 </main>
 </body>
 </html>
